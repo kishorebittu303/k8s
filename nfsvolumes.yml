@@ -6,7 +6,7 @@ metadata:
   labels:
     app: mongodb
 spec: 
-  replicas: 1 ### note we must db pods only 1 is recommened
+  replicas: 1 ### note we must run db pods only 1 is recommened
   strategy:
     type: RollingUpdate
   selector: 
