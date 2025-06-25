@@ -1,40 +1,37 @@
 apiVersion: apps/v1
-kind: Deployment
-metadata: 
-  name: mongodb-deployment
+kind: ReplicaSet
+metadata:
+  name: mongodb
   namespace: prod
-  labels:
-    app: mongodb
-spec: 
-  replicas: 1 ### note we must run db pods only 1 is recommened
-  strategy:
-    type: RollingUpdate
-  selector: 
+spec:
+  selector:
     matchLabels:
       app: mongodb
-  template: 
-    metadata: 
-      labels: 
-        app: mongodb 
-    spec: 
-      containers: 
-      - name: mongodb
-        image: mongo 
-        ports: 
+  replicas: 1 ### for databases create replica only one
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongocon
+        image: mongo
+        ports:
         - containerPort: 27017
-        env: 
+        env:
         - name: MONGO_INITDB_ROOT_USERNAME
           value: bittu
         - name: MONGO_INITDB_ROOT_PASSWORD
           value: bittu@123
-        volumeMounts: 
-        - name: mongobittu
-          mountPath: /data/db 
-      volumes: 
-      - name: mongobittu
-        nfs: 
-          server: 172.31.44.185  # Replace with your NFS server IP or hostname
-          path: /mongo/bittu 
+        volumeMounts:
+        - name: mongonfsvol
+          mountPath: /data/db
+      volumes:
+      - name: mongonfsvol
+        nfs:
+         server: 172.31.34.88
+         path: /mnt/nfs_share
+
 ---
 apiVersion: v1
 kind: Service
@@ -48,3 +45,66 @@ spec:
   ports:
     - port: 27017
       targetPort: 27017
+################################################
+##this is to bring up the application
+###################################################      
+---
+apiVersion: apps/v1
+kind: Deployment 
+metadata: 
+  name: spring-deployment 
+  namespace: prod 
+  labels: 
+    app: spring 
+spec: 
+  replicas: 2
+  selector: 
+    matchLabels: 
+      app: spring
+  template: 
+    metadata: 
+      labels: 
+        app: spring 
+    spec: 
+      containers: 
+      - name: spring-application 
+        image: kkeducation12345/spring-app:1.0.0
+        ports: 
+        - containerPort: 8080
+        env: 
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: bittu
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: bittu@123 
+        volumeMounts: 
+        - name: mongonfsvol
+          mountPath: /data/db
+      volumes: 
+      - name: mongonfsvol
+        nfs: 
+          server: 172.31.34.88
+          path: /mnt/nfs_share
+
+---
+apiVersion: v1 
+kind: Service
+metadata: 
+  name: nodeportsvs
+  namespace: prod 
+spec: 
+  type: NodePort 
+  selector: 
+    app: spring 
+  ports: 
+  - port: 80
+    targetPort: 8080 
+    nodePort: 30036
+  
+
+
+
+
+
+
+
+      
