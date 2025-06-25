@@ -1,39 +1,39 @@
-apiVersion: app/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: Deployment
+  name: mongodb-deployment
   labels:
     app: mongodb
 spec: 
   replicas: 3
-  type: rollingUpdate
+  strategy:
+    type: RollingUpdate
   selector: 
     matchLabels:
       app: mongodb
   template: 
     metadata: 
       labels: 
-        app: nginx 
+        app: mongodb 
     spec: 
       containers: 
       - name: mongodb
         image: mongo 
         ports: 
-        - conatinerPort: 27017
+        - containerPort: 27017
         env: 
-        - name: MONGO_INITDB_ROOT_USERNAMEMore actions
+        - name: MONGO_INITDB_ROOT_USERNAME
           value: bittu
         - name: MONGO_INITDB_ROOT_PASSWORD
           value: bittu@123
         volumeMounts: 
         - name: mongobittu
-          mountpath: /data/db 
+          mountPath: /data/db 
       volumes: 
       - name: mongobittu
         nfs: 
-          server: 
+          server: 172.31.44.185  # Replace with your NFS server IP or hostname
           path: /mongo/bittu 
---- 
 ---
 apiVersion: v1
 kind: Service
@@ -46,7 +46,4 @@ spec:
     app: mongodb
   ports:
     - port: 27017
-      targetPort: 27017   
-
-
-  
+      targetPort: 27017
