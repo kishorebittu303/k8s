@@ -102,12 +102,23 @@ spec:
     targetPort: 8080 
     nodePort: 30036
 #####################################
-# what ever the crediantials we are giving while creating mongodb pod...
-that means MONGO_INITDB_ROOT_USERNAME and MONGO_INITDB_ROOT_PASSWORD this details will be stored in nfs server
-so it will not allow anther time to make save shows the error 500 like WHITELABEL
-so to overcome this we must clean the mount path in nfs server by manuallay
+/*
+When we create a MongoDB pod, the credentials provided via 
+MONGO_INITDB_ROOT_USERNAME and MONGO_INITDB_ROOT_PASSWORD 
+are stored in the NFS server's mounted path.
+
+If we try to redeploy MongoDB with different credentials without 
+cleaning the NFS data, it will not allow the new credentials to take effect 
+and can result in errors like HTTP 500 Whitelabel Error Page.
+
+# To resolve this, we must manually clean the NFS mount path:
+
 sudo rm -rf /mnt/nfs_share/*
 sudo rm -rf /mnt/nfs_share/journal /mnt/nfs_share/mongod.lock
+
+This ensures a fresh MongoDB initialization with the new credentials.
+*/
+
 #####
   
 
