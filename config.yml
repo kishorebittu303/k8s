@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configspring
+  namespace: prod
+data: 
+  dbusername: "bittu"
