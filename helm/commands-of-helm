@@ -1,0 +1,4 @@
+helm upgrade --install javawebapp javawebapp --set replicaCount=3 -n prod #( to upgrade helm replicacount)
+helm repo ls #( to list the repos)
+helm template javawebapp ./javawebapp ## to see what is there in template folder
+helm show values ./javawebapp ## to see the values 
