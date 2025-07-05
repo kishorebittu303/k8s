@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: deployment-with-helm
+  namespace: prod 
+  labels: 
+    app: maven-web-app
+spec: 
+  replicas: {{ .Values.replicaCount }}   ## this value will replace from values.yml it is by bittu
+  selector: 
+    matchLabels: 
+      app: maven-web-app
+  template: 
+    metadata: 
+      labels: 
+        app: maven-web-app 
+    spec: 
+      containers: 
+      - name: maven-web-app 
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"    ## this value will replace from values.yml it is by bittu
+        ports: 
+        - containerPort: {{ .Values.service.port }}  ## this value will replace from values.yml it is by bittu
+          protocol: "tcp"
